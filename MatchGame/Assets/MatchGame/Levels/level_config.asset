@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ee0e4308bf54c84b5310850d05c0ef1, type: 3}
+  m_Name: level_config
+  m_EditorClassIdentifier: 
+  _level: 1
+  _columns: 7
+  _rows: 7
+  _minSwipeCount: 1
+  _maxSwipeCount: 10
+  _cells:
+  - _cellType: 2
+    _posX: 1
+    _posY: 0
+  - _cellType: 2
+    _posX: 3
+    _posY: 0
+  - _cellType: 1
+    _posX: 4
+    _posY: 0
+  - _cellType: 1
+    _posX: 5
+    _posY: 0
+  - _cellType: 2
+    _posX: 1
+    _posY: 1
+  - _cellType: 1
+    _posX: 3
+    _posY: 1
