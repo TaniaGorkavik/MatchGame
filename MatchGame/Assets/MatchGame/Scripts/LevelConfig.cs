@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MatchGame
@@ -26,6 +27,18 @@ namespace MatchGame
         public int MaxSwipeCount => _maxSwipeCount;
         public List<CellData> Cells => _cells;
 
+    }
+    
+    [Serializable]
+    public struct CellData
+    {
+        [SerializeField] private CellType _cellType;
+        [SerializeField] private int _posX;
+        [SerializeField] private int _posY;
+        
+        public CellType CellType => _cellType;
+        public int PosX => _posX;
+        public int PosY => _posY;
     }
 }
 

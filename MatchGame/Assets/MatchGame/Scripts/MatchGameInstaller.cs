@@ -1,3 +1,4 @@
+using MatchGame.Utils;
 using UnityEngine;
 using Zenject;
 
@@ -19,6 +20,8 @@ namespace MatchGame
         {
             Container.BindInterfacesAndSelfTo<MatchGame>().FromInstance(_matchGame);
             Container.BindInterfacesAndSelfTo<MatchBoard>().FromInstance(_matchBoard);
+            
+            Container.BindCustomClass<InputManager>();
         }
     }
 }
