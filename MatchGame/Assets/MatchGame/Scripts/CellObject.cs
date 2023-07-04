@@ -1,4 +1,5 @@
 ﻿using System;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -6,7 +7,8 @@ namespace MatchGame
 {
     public class CellObject : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
-        private static readonly int _destroyTrigger = Animator.StringToHash("Destroy");
+        private static readonly int DestroyTrigger = Animator.StringToHash("Destroy");
+        private static readonly string DestroyAnimationName = "Destroy";
         
         public event Action<CellObject, Vector2> OnPointerUpEvent;
         public event Action<CellObject, Vector2> OnPointerDownEvent;
@@ -26,6 +28,7 @@ namespace MatchGame
             transform.position = cellPos;
             _cellCoord = cellPosition;
         }
+        
         public void OnPointerDown(PointerEventData eventData)
         {
             OnPointerDownEvent?.Invoke(this, eventData.pressPosition);
@@ -34,6 +37,14 @@ namespace MatchGame
         public void OnPointerUp(PointerEventData eventData)
         {
             OnPointerUpEvent?.Invoke(this, eventData.position);
+        }
+
+        public async UniTask DestroyCell()
+        {
+            _animator.SetTrigger(DestroyTrigger);
+            await UniTask.WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).IsName(DestroyAnimationName));
+            await UniTask.WaitWhile(() => _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1);
+            Destroy(gameObject);
         }
     }
 }

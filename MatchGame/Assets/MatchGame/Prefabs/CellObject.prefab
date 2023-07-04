@@ -48,6 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cellType: 0
+  _animator: {fileID: 1073228370278802588}
 --- !u!212 &823291192753408384
 SpriteRenderer:
   m_ObjectHideFlags: 0

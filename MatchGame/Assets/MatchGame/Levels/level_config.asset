@@ -17,6 +17,7 @@ MonoBehaviour:
   _rows: 7
   _minSwipeCount: 1
   _maxSwipeCount: 10
+  _availableCellsTypes: 0100000002000000
   _cells:
   - _cellType: 2
     _posX: 1

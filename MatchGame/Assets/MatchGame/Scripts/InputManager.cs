@@ -4,9 +4,11 @@ using Zenject;
 
 namespace MatchGame
 {
-    public class InputManager : IInitializable, IDisposable
+    public class InputManager
     {
         private MatchBoard _matchBoard;
+        
+        public bool IsInputBlocked { get; set; }
         
         [Inject]
         void Construct(MatchBoard matchBoard)
@@ -14,16 +16,6 @@ namespace MatchGame
             _matchBoard = matchBoard;
         }
         
-        public void Initialize()
-        {
-            
-        }
-
-        public void Dispose()
-        {
-            
-        }
-
         public void AddListeners(CellObject cellObject)
         {
             cellObject.OnPointerDownEvent += OnCellClickDown;
@@ -47,9 +39,15 @@ namespace MatchGame
         
         private void OnCellClickUp(CellObject cellObject, Vector2 endPos)
         {
-            //todo: добаить проверку на минимальный свайп
-            MoveDirectionType moveDirectionType = GetMoveDirectionType(endPos - _startPos);
-            _matchBoard.MoveCell(cellObject, moveDirectionType);
+            if (!IsInputBlocked)
+            {
+                Vector2 moveVector = endPos - _startPos;
+                if (moveVector.magnitude > 10f)
+                {
+                    MoveDirectionType moveDirectionType = GetMoveDirectionType(moveVector);
+                    _matchBoard.MoveCell(cellObject, moveDirectionType);
+                }
+            }
         }
         
         private MoveDirectionType GetMoveDirectionType(Vector2 moveVector)
