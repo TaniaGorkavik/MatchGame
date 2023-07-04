@@ -10,30 +10,66 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3ee0e4308bf54c84b5310850d05c0ef1, type: 3}
-  m_Name: level_config
+  m_Name: level_3
   m_EditorClassIdentifier: 
   _level: 1
-  _columns: 7
-  _rows: 7
+  _columns: 6
+  _rows: 6
   _minSwipeCount: 1
-  _maxSwipeCount: 10
+  _maxSwipeCount: 5
   _availableCellsTypes: 0100000002000000
   _cells:
   - _cellType: 2
     _posX: 1
     _posY: 0
+  - _cellType: 1
+    _posX: 2
+    _posY: 0
   - _cellType: 2
     _posX: 3
     _posY: 0
-  - _cellType: 1
+  - _cellType: 2
     _posX: 4
-    _posY: 0
-  - _cellType: 1
-    _posX: 5
     _posY: 0
   - _cellType: 2
     _posX: 1
     _posY: 1
   - _cellType: 1
+    _posX: 2
+    _posY: 1
+  - _cellType: 2
     _posX: 3
     _posY: 1
+  - _cellType: 2
+    _posX: 4
+    _posY: 1
+  - _cellType: 1
+    _posX: 1
+    _posY: 2
+  - _cellType: 2
+    _posX: 2
+    _posY: 2
+  - _cellType: 1
+    _posX: 3
+    _posY: 2
+  - _cellType: 1
+    _posX: 4
+    _posY: 2
+  - _cellType: 2
+    _posX: 1
+    _posY: 3
+  - _cellType: 2
+    _posX: 2
+    _posY: 3
+  - _cellType: 2
+    _posX: 4
+    _posY: 3
+  - _cellType: 2
+    _posX: 1
+    _posY: 4
+  - _cellType: 1
+    _posX: 2
+    _posY: 4
+  - _cellType: 2
+    _posX: 2
+    _posY: 5
