@@ -141,7 +141,7 @@ namespace MatchGame
             for (int column = 0; column < _boardSize.Columns; column++)
             {
                 List<CellObject> matchSequence = new List<CellObject>();
-                for (int row = 1; row < _boardSize.Rows; row++)
+                for (int row = 0; row < _boardSize.Rows; row++)
                 {
                     if (_grid[column, row] != null && _grid[column, row].CellType == cellType)
                     {
