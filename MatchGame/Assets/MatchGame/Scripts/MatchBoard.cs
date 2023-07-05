@@ -8,20 +8,18 @@ using IInitializable = Zenject.IInitializable;
 
 namespace MatchGame
 {
-    public class MatchBoard : MonoBehaviour, IInitializable
+    public class MatchBoard : MonoBehaviour
     {
         [SerializeField] private Transform _cellContainer;
-        [SerializeField] public List<CellObject> _cells;
+        [SerializeField] public CellsConfig _cellsConfig;
 
         private (float X, float Y) _cellSize = (2.1f, 2.1f);
         private (int Columns, int Rows) _boardSize = (7, 7);
-        private Dictionary<CellType, CellObject> _cellsDictionary = new Dictionary<CellType, CellObject>();
+        private CellObject[,] _grid = new CellObject[7, 7];
+        private int _matchedCells;
 
         private MatchGame _matchGame;
         private InputManager _inputManager;
-
-        private CellObject[,] _grid;
-
 
         [Inject]
         void Construct(MatchGame matchGame, InputManager inputManager)
@@ -30,41 +28,52 @@ namespace MatchGame
             _inputManager = inputManager;
         }
 
-        public void Initialize()
-        {
-            Init();
-        }
-
-        private void Init()
-        {
-            _boardSize = (_matchGame.CurrentLevel.Columns, _matchGame.CurrentLevel.Rows);
-            _cells.ForEach(_cell => _cellsDictionary.Add(_cell.CellType, _cell));
-
-            CreateBoard();
-        }
-
+        //todo создание и удаление клеток заменить на пул объектов
         public void CreateBoard()
         {
+            ClearBoard();
+
+            _boardSize = (_matchGame.CurrentLevel.Columns, _matchGame.CurrentLevel.Rows);
             _grid = new CellObject[_boardSize.Columns, _boardSize.Rows];
+            _matchedCells = 0;
 
-            _matchGame.CurrentLevel.Cells.ForEach(cellConfig =>
+            _matchGame.CurrentLevel.Cells.ForEach(cellData =>
             {
-                (int X, int Y) coord = (cellConfig.PosX, cellConfig.PosY);
-                var newCell = Instantiate(_cellsDictionary[cellConfig.CellType], _cellContainer);
-                newCell.SetCellPosition(GetPositionByCoord(coord), coord);
+                (int X, int Y) coord = (cellData.PosX, cellData.PosY);
+                CellObject cellObject = _cellsConfig.GetCellObjectByType(cellData.CellType);
 
-                _inputManager.AddListeners(newCell);
-
-                _grid[cellConfig.PosX, cellConfig.PosY] = newCell;
+                if (cellObject != null)
+                {
+                    var newCell = Instantiate(cellObject, _cellContainer);
+                    newCell.SetCellPosition(GetPositionByCoord(coord), coord);
+                    _inputManager.AddListeners(newCell);
+                    _grid[cellData.PosX, cellData.PosY] = newCell;
+                }
             });
 
             NormalizeBord();
         }
 
+        private void ClearBoard()
+        {
+            for (int column = 0; column < _boardSize.Columns; column++)
+            {
+                for (int row = 0; row < _boardSize.Rows; row++)
+                {
+                    if (_grid[column, row] != null)
+                    {
+                        CellObject cellObject = _grid[column, row];
+                        _grid[column, row] = null;
+                        Destroy(cellObject.gameObject);
+                    }
+                }
+            }
+        }
+
         public async UniTask<bool> MoveCell(CellObject cell, MoveDirectionType moveDirectionType)
         {
             _inputManager.IsInputBlocked = true;
-            
+
             (int X, int Y) currentCellPos = cell.CellCoord;
             (int X, int Y) targetCellPos = currentCellPos;
             switch (moveDirectionType)
@@ -95,21 +104,17 @@ namespace MatchGame
                 _grid[targetCellPos.X, targetCellPos.Y] = currentGridItem;
                 _grid[currentCellPos.X, currentCellPos.Y] = targetGridItem;
 
+                currentGridItem.SetCellPosition(GetPositionByCoord(targetCellPos), targetCellPos);
+
                 if (targetGridItem != null)
-                {
-                    currentGridItem.SetCellPosition(GetPositionByCoord(targetCellPos), targetCellPos);
                     targetGridItem.SetCellPosition(GetPositionByCoord(currentCellPos), currentCellPos);
-                }
-                else
-                {
-                    currentGridItem.SetCellPosition(GetPositionByCoord(targetCellPos), targetCellPos);
-                }
             }
 
             NormalizeBord();
             return true;
         }
 
+        //todo оптимизировать матч логику
         private async UniTask<bool> MatchCells()
         {
             HashSet<CellObject> matchedCellObjects = new HashSet<CellObject>();
@@ -123,6 +128,8 @@ namespace MatchGame
                 matchedCellObjects.UnionWith(verticalMatches);
             });
 
+            _matchedCells += matchedCellObjects.Count;
+            
             List<UniTask> tasks = new List<UniTask>();
             foreach (var cellObject in matchedCellObjects)
             {
@@ -132,6 +139,12 @@ namespace MatchGame
             }
 
             await UniTask.WhenAll(tasks);
+
+            if (_matchedCells == _matchGame.CurrentLevel.Cells.Count)
+            {
+                _matchGame.NextLevel();
+            }
+
             return matchedCellObjects.Count > 0;
         }
 

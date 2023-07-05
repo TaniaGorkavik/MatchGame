@@ -7,22 +7,21 @@ namespace MatchGame
     public class InputManager
     {
         private MatchBoard _matchBoard;
-        
+
         public bool IsInputBlocked { get; set; }
-        
+
         [Inject]
         void Construct(MatchBoard matchBoard)
         {
             _matchBoard = matchBoard;
         }
-        
+
         public void AddListeners(CellObject cellObject)
         {
             cellObject.OnPointerDownEvent += OnCellClickDown;
             cellObject.OnPointerUpEvent += OnCellClickUp;
-
         }
-        
+
         public void RemoveListeners(CellObject cellObject)
         {
             cellObject.OnPointerDownEvent -= OnCellClickDown;
@@ -31,12 +30,13 @@ namespace MatchGame
 
         private Vector2 _startPos;
         private CellObject _cellObject;
+
         private void OnCellClickDown(CellObject cellObject, Vector2 startPos)
         {
             _cellObject = cellObject;
             _startPos = startPos;
         }
-        
+
         private void OnCellClickUp(CellObject cellObject, Vector2 endPos)
         {
             if (!IsInputBlocked)
@@ -49,13 +49,13 @@ namespace MatchGame
                 }
             }
         }
-        
+
         private MoveDirectionType GetMoveDirectionType(Vector2 moveVector)
         {
             MoveDirectionType moveDirectionType;
             float positiveX = Mathf.Abs(moveVector.x);
             float positiveY = Mathf.Abs(moveVector.y);
-            
+
             if (positiveX > positiveY)
             {
                 moveDirectionType = (moveVector.x > 0) ? MoveDirectionType.Right : MoveDirectionType.Left;
@@ -68,7 +68,7 @@ namespace MatchGame
             return moveDirectionType;
         }
     }
-    
+
     public enum MoveDirectionType
     {
         None,
