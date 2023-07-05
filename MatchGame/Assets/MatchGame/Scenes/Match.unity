@@ -827,7 +827,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -2
   m_Sprite: {fileID: 21300000, guid: 3795f2c272033184bb058ed62f3cd886, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -984,6 +984,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1448656823}
     m_Modifications:
+    - target: {fileID: 4213365440985406676, guid: 42548b7f50253444cbeb044d48bf9885, type: 3}
+      propertyPath: m_SortingOrder
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 4213365441792375128, guid: 42548b7f50253444cbeb044d48bf9885, type: 3}
       propertyPath: m_Name
       value: Balloons-FX
