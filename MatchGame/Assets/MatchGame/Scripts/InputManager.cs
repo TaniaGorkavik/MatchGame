@@ -71,7 +71,6 @@ namespace MatchGame
 
     public enum MoveDirectionType
     {
-        None,
         Left,
         Right,
         Up,

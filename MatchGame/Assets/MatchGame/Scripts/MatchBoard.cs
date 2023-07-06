@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Unity.VisualScripting;
@@ -13,7 +14,7 @@ namespace MatchGame
         [SerializeField] private Transform _cellContainer;
         [SerializeField] public CellsConfig _cellsConfig;
 
-        private (float X, float Y) _cellSize = (2.1f, 2.1f);
+        private (float Width, float Height) _cellSize = (2.1f, 2.1f);
         private (int Columns, int Rows) _boardSize = (7, 7);
         private CellObject[,] _grid = new CellObject[7, 7];
         private int _matchedCells;
@@ -70,10 +71,8 @@ namespace MatchGame
             }
         }
 
-        public async UniTask<bool> MoveCell(CellObject cell, MoveDirectionType moveDirectionType)
+        public async UniTask MoveCell(CellObject cell, MoveDirectionType moveDirectionType)
         {
-            _inputManager.IsInputBlocked = true;
-
             (int X, int Y) currentCellPos = cell.CellCoord;
             (int X, int Y) targetCellPos = currentCellPos;
             switch (moveDirectionType)
@@ -92,26 +91,29 @@ namespace MatchGame
                     break;
             }
 
-            if (targetCellPos == currentCellPos) return false;
-
             if (IsValidCoord(targetCellPos))
             {
-                var currentGridItem = _grid[currentCellPos.X, currentCellPos.Y];
-                var targetGridItem = _grid[targetCellPos.X, targetCellPos.Y];
+                if (_grid[targetCellPos.X, targetCellPos.Y] == null && moveDirectionType == MoveDirectionType.Up) return;
 
-                if (targetGridItem == null && moveDirectionType == MoveDirectionType.Up) return false;
-
-                _grid[targetCellPos.X, targetCellPos.Y] = currentGridItem;
-                _grid[currentCellPos.X, currentCellPos.Y] = targetGridItem;
-
-                currentGridItem.SetCellPosition(GetPositionByCoord(targetCellPos), targetCellPos);
-
-                if (targetGridItem != null)
-                    targetGridItem.SetCellPosition(GetPositionByCoord(currentCellPos), currentCellPos);
+                _inputManager.IsInputBlocked = true;
+                MoveCell(currentCellPos, targetCellPos);
+                NormalizeBord();
             }
+        }
 
-            NormalizeBord();
-            return true;
+        public async UniTask MoveCell((int X, int Y) from, (int X, int Y) to)
+        {
+            var fromCellObject = _grid[from.X, from.Y];
+            var toCellObject = _grid[to.X, to.Y];
+
+            _grid[to.X, to.Y] = fromCellObject;
+            _grid[from.X, from.Y] = toCellObject;
+
+            if (fromCellObject != null)
+                fromCellObject.SetCellPosition(GetPositionByCoord(to), to);
+
+            if (toCellObject != null)
+                toCellObject.SetCellPosition(GetPositionByCoord(from), from);
         }
 
         //todo оптимизировать матч логику
@@ -129,7 +131,7 @@ namespace MatchGame
             });
 
             _matchedCells += matchedCellObjects.Count;
-            
+
             List<UniTask> tasks = new List<UniTask>();
             foreach (var cellObject in matchedCellObjects)
             {
@@ -234,12 +236,7 @@ namespace MatchGame
 
                     if (target != current)
                     {
-                        var currentGridItem = _grid[current.X, current.Y];
-
-                        _grid[target.X, target.Y] = currentGridItem;
-                        _grid[current.X, current.Y] = null;
-
-                        currentGridItem.SetCellPosition(GetPositionByCoord(target), target);
+                        MoveCell(current, target);
                         fallingCells++;
                     }
                 }
@@ -266,8 +263,8 @@ namespace MatchGame
 
         private Vector3 GetPositionByCoord((int X, int Y) coord)
         {
-            Vector3 positionOffset = transform.position - new Vector3(_boardSize.Columns * _cellSize.X / 2.5f, 11f, 0);
-            return new Vector3(coord.X * _cellSize.X, coord.Y * _cellSize.Y, 0) + positionOffset;
+            Vector3 positionOffset = transform.position - new Vector3(_boardSize.Columns * _cellSize.Height / 2.5f, 11f, 0);
+            return new Vector3(coord.X * _cellSize.Width, coord.Y * _cellSize.Height, 0) + positionOffset;
         }
 
         private bool IsValidCoord((int X, int Y) coord)
