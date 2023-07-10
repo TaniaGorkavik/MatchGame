@@ -12,7 +12,6 @@ namespace MatchGame
 
         [SerializeField] private CellType _cellType;
         [SerializeField] private Animator _animator;
-        [SerializeField] private SpriteRenderer _spriteRenderer;
 
         private (int X, int Y) _cellCoord;
 
@@ -26,8 +25,6 @@ namespace MatchGame
         {
             transform.position = cellPos;
             _cellCoord = cellPosition;
-
-            _spriteRenderer.sortingOrder = cellPosition.X + cellPosition.Y * 10;
         }
 
         public void OnPointerDown(PointerEventData eventData)
